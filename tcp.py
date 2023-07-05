@@ -10,7 +10,6 @@ async def tcp_forward(client: socket, server: socket):
     data = await loop.sock_recv(client, 1024)
     while data != b'':
         data, sub = xor_cipher(data, sub)
-        print(data)
         await loop.sock_sendall(server, data)
         data = await loop.sock_recv(client, 1024)
     client.close()
