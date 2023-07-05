@@ -13,7 +13,7 @@ async def handle_client(client: socket):
         if is_http_header(respData):
             await loop.sock_sendall(client, response_header(respData))
             if respData.find(b'httpUDP') == -1:
-                await tcp.handle_tcp_client(client, respData)
+                await tcp.handle_tcp_connection(client, respData)
             else:
                 await handle_client(client)
         else:
