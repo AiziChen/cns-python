@@ -25,7 +25,7 @@ async def run_server():
     logging.basicConfig(level=logging.INFO,
                         format='[%(asctime)s]%(levelname)s - %(message)s')
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind(('localhost', 8080))
+    server.bind(('0.0.0.0', 1080))
     server.listen(256)
     server.setblocking(False)
     loop = asyncio.get_event_loop()
