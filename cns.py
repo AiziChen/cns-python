@@ -11,10 +11,11 @@ async def handle_client_streams(reader: asyncio.StreamReader, writer: asyncio.St
     sock: socket.socket = writer.get_extra_info('socket')
     sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
     logging.info(f'Received a new connection {sock.getpeername()}')
-    respData = await reader.read(4096)
+    respData = await reader.read(8912)
     if respData:
         if is_http_header(respData):
             writer.write(response_header(respData))
+            writer.drain()
             if respData.find(b'httpUDP') == -1:
                 await tcp.handle_tcp_connection(reader, writer, respData)
             else:

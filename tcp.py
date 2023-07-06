@@ -7,12 +7,13 @@ from tools import *
 async def tcp_forward(creader: asyncio.StreamReader, swriter: asyncio.StreamWriter):
     sub = 0
     while True:
-        data = await creader.read(65536)
+        data = await creader.read(12288)
         if not data:
             break
         data, sub = xor_cipher(data, sub)
         swriter.write(data)
     swriter.close()
+    await swriter.wait_closed()
 
 
 async def handle_tcp_connection(reader: asyncio.StreamReader, writer: asyncio.StreamWriter, data: bytes):
