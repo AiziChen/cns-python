@@ -33,7 +33,8 @@ async def handle_tcp_connection(reader: asyncio.StreamReader, writer: asyncio.St
             try:
                 sreader, swriter = await asyncio.wait_for(fut=sfut, timeout=6)
             except:
-                writer.write(f'Proxy  address [{host}] ResolveTCP() error')
+                writer.write(
+                    f'Proxy  address [{host}] ResolveTCP() error'.encode('utf8'))
                 await writer.drain()
                 return
             ssock: socket.socket = swriter.get_extra_info('socket')
