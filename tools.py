@@ -15,7 +15,7 @@ def is_http_header(data: bytes) -> bool:
 def response_header(data: bytes) -> bytes:
     if data.find(b'WebSocket') != -1:
         return b'HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: CuteBi Network Tunnel, (%>w<%)\r\n\r\n'
-    elif data.startswith("CON"):
+    elif data.startswith(b'CON'):
         return b'HTTP/1.1 200 Connection established\r\nServer: CuteBi Network Tunnel, (%>w<%)\r\nConnection: keep-alive\r\n\r\n'
     else:
         return b'HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\nServer: CuteBi Network Tunnel, (%>w<%)\r\nConnection: keep-alive\r\n\r\n'
