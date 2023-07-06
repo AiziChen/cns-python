@@ -10,6 +10,8 @@ import tcp
 async def handle_client_streams(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
     sock: socket.socket = writer.get_extra_info('socket')
     sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 0)
+    sock.setblocking(False)
     logging.info(f'Received a new connection {sock.getpeername()}')
     respData = await reader.read(8912)
     if respData:
@@ -31,7 +33,7 @@ if __name__ == '__main__':
     loop = uvloop.new_event_loop()
     asyncio.set_event_loop(loop)
     loop.set_debug(False)
-    coro = asyncio.start_server(handle_client_streams, '0.0.0.0', 1080)
+    coro = asyncio.start_server(handle_client_streams, '0.0.0.0', 80)
     loop.run_until_complete(coro)
     try:
         loop.run_forever()
