@@ -21,6 +21,7 @@ async def handle_tcp_connection(reader: asyncio.StreamReader, writer: asyncio.St
     host = get_proxy_host(data)
     if host == None:
         writer.write(b'No proxy host')
+        await writer.drain()
     else:
         host = decrypt_host(host)[0:-1]
         logging.info(f'proxy host: {host}')
@@ -28,10 +29,15 @@ async def handle_tcp_connection(reader: asyncio.StreamReader, writer: asyncio.St
             if host.find(':') == -1:
                 host += ':80'
             hostport = host.split(':')
-            sreader, swriter = await asyncio.open_connection(
-                hostport[0], int(hostport[1]))
+            sfut = asyncio.open_connection(hostport[0], int(hostport[1]))
+            try:
+                sreader, swriter = await asyncio.wait_for(fut=sfut, timeout=6)
+            except:
+                writer.write(f'Proxy  address [{host}] ResolveTCP() error')
+                await writer.drain()
+                return
             ssock: socket.socket = swriter.get_extra_info('socket')
-            ssock.setsockopt(socket.IPPROTO_TCP, socket.SO_KEEPALIVE, 1)
+            ssock.setsockopt(socket.IPPROTO_TCP, socket.SO_KEEPALIVE, 0)
             ssock.setblocking(False)
 
             asyncio.create_task(tcp_forward(reader, swriter))
