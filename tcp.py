@@ -25,23 +25,24 @@ async def handle_tcp_connection(reader: asyncio.StreamReader, writer: asyncio.St
     else:
         host = decrypt_host(host)[0:-1]
         logging.info(f'proxy host: {host}')
-        if not host.endswith(':53'):
-            if host.find(':') == -1:
-                host += ':80'
-            hostport = host.split(':')
-            sfut = asyncio.open_connection(hostport[0], int(hostport[1]))
-            try:
-                sreader, swriter = await asyncio.wait_for(fut=sfut, timeout=6)
-            except:
-                writer.write(
-                    f'Proxy  address [{host}] ResolveTCP() error'.encode('utf8'))
-                await writer.drain()
-                return
-            ssock: socket.socket = swriter.get_extra_info('socket')
-            ssock.setsockopt(socket.IPPROTO_TCP, socket.SO_KEEPALIVE, 0)
-            ssock.setblocking(False)
+        # if not host.endswith(':53'):
+        if host.find(':') == -1:
+            host += ':80'
+        hostport = host.split(':')
+        sfut = asyncio.open_connection(hostport[0], int(hostport[1]))
+        try:
+            sreader, swriter = await asyncio.wait_for(fut=sfut, timeout=6)
+        except:
+            writer.write(
+                f'Proxy  address [{host}] ResolveTCP() error'.encode('utf8'))
+            await writer.drain()
+            return
+        ssock: socket.socket = swriter.get_extra_info('socket')
+        ssock.setsockopt(socket.IPPROTO_TCP, socket.SO_KEEPALIVE, 0)
+        ssock.setblocking(False)
 
-            asyncio.create_task(tcp_forward(reader, swriter))
-            await tcp_forward(sreader, writer)
-        else:
-            pass
+        asyncio.create_task(tcp_forward(reader, swriter))
+        await tcp_forward(sreader, writer)
+        swriter.close()
+        # else:
+        #     pass
