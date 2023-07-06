@@ -30,11 +30,10 @@ async def handle_tcp_connection(reader: asyncio.StreamReader, writer: asyncio.St
             sreader, swriter = await asyncio.open_connection(
                 hostport[0], int(hostport[1]))
             ssock: socket.socket = swriter.get_extra_info('socket')
-            ssock.setsockopt(socket.SO_KEEPALIVE, 0)
+            ssock.setsockopt(socket.IPPROTO_TCP, socket.SO_KEEPALIVE, 1)
             ssock.setblocking(False)
 
             asyncio.create_task(tcp_forward(reader, swriter))
             await tcp_forward(sreader, writer)
-            print("end")
         else:
             pass
