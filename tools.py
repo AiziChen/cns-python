@@ -21,23 +21,22 @@ def response_header(data: bytes) -> bytes:
         return b'HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\nServer: CuteBi Network Tunnel, (%>w<%)\r\nConnection: keep-alive\r\n\r\n'
 
 
-def xor_cipher(data: bytes, passSub: int = 0) -> tuple[bytes, int]:
-    data = bytearray(data)
+def xor_cipher(data: bytearray, passSub: int = 0) -> int:
     dataLen = len(data)
     if dataLen <= 0:
-        return data, passSub
+        return passSub
     else:
         passLen = len("quanyec")
         pi = passSub
         for dataSub in range(dataLen):
             pi = (dataSub + passSub) % passLen
             data[dataSub] ^= ord("quanyec"[pi]) | pi
-        return data, pi + 1
+        return pi + 1
 
 
 def decrypt_host(host: str) -> str:
     bytesHost = base64.decodebytes(host.encode('utf8'))
-    bytesHost, _ = xor_cipher(bytesHost)
+    _ = xor_cipher(bytearray(bytesHost))
     return bytesHost.decode('utf8')
 
 

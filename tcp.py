@@ -8,9 +8,10 @@ async def tcp_forward(reader: asyncio.StreamReader, writer: asyncio.StreamWriter
     sub = 0
     while True:
         data = await reader.read(12288)
+        data = bytearray(data)
         if not data:
             break
-        data, sub = xor_cipher(data, sub)
+        sub = xor_cipher(data, sub)
         writer.write(data)
     writer.close()
 
