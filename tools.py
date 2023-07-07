@@ -25,7 +25,7 @@ def xor_cipher(data: bytes, passSub: int = 0) -> tuple[bytes, int]:
     data = bytearray(data)
     dataLen = len(data)
     if dataLen <= 0:
-        return passSub
+        return data, passSub
     else:
         passLen = len("quanyec")
         pi = passSub
@@ -42,5 +42,8 @@ def decrypt_host(host: str) -> str:
 
 
 def get_proxy_host(header: bytes) -> str:
-    matched = re.search('Meng:\s*(.+)\r\n', header.decode('utf8'))
-    return matched and matched[1].strip()
+    matched = re.search('Meng:\\s*(.+)\r\n', header.decode('utf8'))
+    if matched:
+        return matched[1].strip()
+    else:
+        return ''
