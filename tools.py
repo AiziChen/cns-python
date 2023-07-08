@@ -36,7 +36,8 @@ def xor_cipher(data: bytearray, passSub: int = 0) -> int:
 
 def decrypt_host(host: str) -> str:
     bytesHost = base64.decodebytes(host.encode('utf8'))
-    _ = xor_cipher(bytearray(bytesHost))
+    bytesHost = bytearray(bytesHost)
+    _ = xor_cipher(bytesHost)
     return bytesHost.decode('utf8')
 
 
